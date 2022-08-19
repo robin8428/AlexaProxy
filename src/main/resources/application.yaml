@@ -1,0 +1,13 @@
+server:
+  port: 2020
+
+spring:
+  main:
+    banner-mode: "off"
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    default-property-inclusion: NON_ABSENT
+    serialization.FAIL_ON_EMPTY_BEANS: false
