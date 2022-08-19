@@ -18,3 +18,6 @@ spring:
   jackson:
     default-property-inclusion: NON_ABSENT
     serialization.FAIL_ON_EMPTY_BEANS: false
+
+alexa:
+  skill-id: amzn1.ask.skill.your-skill-uuid

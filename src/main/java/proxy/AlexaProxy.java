@@ -45,7 +45,7 @@ public class AlexaProxy {
 
 
 	@PreDestroy
-	public void shutdown() {
+	private void shutdown() {
 		LOG.trace("shutting down server...");
 
 		LOG.trace("server shut down successfully");
