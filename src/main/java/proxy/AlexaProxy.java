@@ -1,7 +1,5 @@
 package proxy;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,21 +32,11 @@ public class AlexaProxy {
 
 	public static void init(ApplicationContext ctx) {
 		AlexaProxy.getInstance().ctx = ctx;
-
 		LOG.info("AlexyProxy startup successful.");
 	}
 
 
 	public <T> T getBean(Class<T> clazz) {
 		return ctx.getBean(clazz);
-	}
-
-
-	@PreDestroy
-	private void shutdown() {
-		LOG.trace("shutting down server...");
-
-		LOG.trace("server shut down successfully");
-		System.exit(0);
 	}
 }
