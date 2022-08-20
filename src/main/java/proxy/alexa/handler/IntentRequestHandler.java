@@ -104,6 +104,7 @@ public class IntentRequestHandler implements com.amazon.ask.dispatcher.request.h
 				? EntityUtils.toString(entity, StandardCharsets.UTF_8)
 				: "";
 
+		LOG.debug("Received response code: '{}' body: '{}'", statusCode, entityContent);
 		if (statusCode < 200 || statusCode > 299) {
 			throw new NokResponseException(statusCode, entityContent);
 		}
