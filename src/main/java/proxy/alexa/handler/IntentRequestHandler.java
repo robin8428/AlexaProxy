@@ -64,16 +64,12 @@ public class IntentRequestHandler implements com.amazon.ask.dispatcher.request.h
 				.orElseThrow();
 
 		try {
-			boolean success = tryCallback(callback.getCallbackUrl(), callback.getCallbackAuthentication());
-			if (!success) {
-				return HandlerUtils.buildResponse(input, "Nok Response", properties.getProxyProperties().getFallbackNokSentence());
-			}
+			tryCallback(callback.getCallbackUrl(), callback.getCallbackAuthentication());
+			return HandlerUtils.buildSuccessResponse(input, callback.getCallbackSuccessSentence());
 		} catch (Exception e) {
 			LOG.warn("Exception ocurred trying to invoke callback", e);
-			return HandlerUtils.buildResponse(input, "Exception Response", properties.getProxyProperties().getFallbackNokSentence() + " " + e.getMessage());
+			return HandlerUtils.buildExceptionResponse(input, properties.getProxyProperties().getFallbackNokSentence(), e);
 		}
-
-		return HandlerUtils.buildResponse(input, "Success Response", callback.getCallbackSuccessSentence());
 	}
 
 
@@ -89,7 +85,7 @@ public class IntentRequestHandler implements com.amazon.ask.dispatcher.request.h
 	}
 
 
-	private boolean tryCallback(String url, String auth) throws IOException {
+	private void tryCallback(String url, String auth) throws IOException {
 		LOG.debug("Invoking callback '{}'", url);
 		HttpClient httpclient = HttpClients.createDefault();
 		HttpPost httppost = new HttpPost(url);
@@ -102,7 +98,16 @@ public class IntentRequestHandler implements com.amazon.ask.dispatcher.request.h
 				? EntityUtils.toString(entity, StandardCharsets.UTF_8)
 				: "";
 
-		LOG.debug("Received response code: '{}' body: '{}'", statusCode, entityContent);
-		return statusCode >= 200 && statusCode <= 299;
+		if (statusCode < 200 || statusCode > 299) {
+			throw new NokResponseException(statusCode, entityContent);
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private static class NokResponseException extends RuntimeException {
+
+		public NokResponseException(int statusCode, String body) {
+			super("Received nok response code: " + statusCode + " body: " + body);
+		}
 	}
 }
