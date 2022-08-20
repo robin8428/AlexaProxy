@@ -10,18 +10,23 @@ import org.springframework.context.annotation.Configuration;
 import com.amazon.ask.Skills;
 import com.amazon.ask.servlet.SkillServlet;
 
+import proxy.alexa.handler.IntentRequestHandler;
 import proxy.alexa.handler.LaunchRequestHandler;
-import proxy.util.Config;
+import proxy.util.Properties;
 
 
 @Configuration
 public class AlexaConfig {
 
-	private final Config config;
+	private final Properties config;
+	private final IntentRequestHandler intentHandler;
+	private final LaunchRequestHandler launchHandler;
 
 	@Autowired
-	AlexaConfig(Config config) {
+	AlexaConfig(Properties config, IntentRequestHandler intentHandler, LaunchRequestHandler launchHandler) {
 		this.config = config;
+		this.launchHandler = launchHandler;
+		this.intentHandler = intentHandler;
 	}
 
 
@@ -37,8 +42,9 @@ public class AlexaConfig {
 	private SkillServlet createAlexaServlet() {
 		return new SkillServlet(Skills.standard()
 				.addRequestHandlers(
-						new LaunchRequestHandler())
-				.withSkillId(config.getSkillId())
+						launchHandler,
+						intentHandler)
+				.withSkillId(config.getAlexaProperties().getSkillId())
 				.build());
 	}
 }

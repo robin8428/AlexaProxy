@@ -21,3 +21,22 @@ spring:
 
 alexa:
   skill-id: amzn1.ask.skill.your-skill-uuid
+  intent-name: YourIntentName
+  intent-room-slot: room-slot
+  intent-action-slot: action-slot
+
+proxy:
+  rooms:
+  - room-name: "your-room-name-value"
+    room-actions:
+    - action-name: "your-first-action-name-value"
+      action-callback:
+        callback-url: "http://localhost/your/callback?with=query"
+        callback-authentication: "Basic dXNlcjpwYXNzd29yZA=="
+        callback-success-sentence: "Action 1 was executed successfully."
+    - action-name: "your-second-action-name-value"
+      action-callback:
+        callback-url: "http://localhost/your/callback?with=different+query"
+        callback-authentication: "Basic dXNlcjpwYXNzd29yZA=="
+        callback-success-sentence: "Action 2 was executed successfully."
+  fallback-nok-sentence: "Request could not be processed correctly."
