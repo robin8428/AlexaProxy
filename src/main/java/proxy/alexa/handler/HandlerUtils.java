@@ -8,20 +8,23 @@ import com.amazon.ask.model.Response;
 
 class HandlerUtils {
 
-	static Optional<Response> buildSuccessResponse(HandlerInput handlerInput, String text) {
+	static Optional<Response> buildSuccessResponse(HandlerInput handlerInput, String title, String text) {
 		return handlerInput.getResponseBuilder()
 				.withSpeech(text)
+				.withSimpleCard(title, text)
+				.withShouldEndSession(true)
 				.build();
 	}
 
 
-	static Optional<Response> buildExceptionResponse(HandlerInput handlerInput, String text, Exception e) {
+	static Optional<Response> buildExceptionResponse(HandlerInput handlerInput, String title, String text, Exception e) {
 		if (text.endsWith(".")) {
 			text = text.substring(0, text.length() - 1) + ":";
 		}
 		return handlerInput.getResponseBuilder()
 				.withSpeech(text + " " + e.getClass().getSimpleName())
-				.withSimpleCard("Exception", e.getMessage())
+				.withSimpleCard(title, e.getMessage())
+				.withShouldEndSession(true)
 				.build();
 	}
 }

@@ -52,23 +52,29 @@ public class IntentRequestHandler implements com.amazon.ask.dispatcher.request.h
 	public Optional<Response> handle(HandlerInput input, IntentRequest intentRequest) {
 		final String room = getIdFromSlot(intentRequest.getIntent().getSlots().get(properties.getAlexaProperties().getIntentRoomSlot()));
 		final String action = getIdFromSlot(intentRequest.getIntent().getSlots().get(properties.getAlexaProperties().getIntentActionSlot()));
-		LOG.debug("Requesting action '{}' for room '{}'", action, room);
+		LOG.info("Requesting action '{}' for room '{}'", action, room);
 
-		final ActionCallback callback = properties.getProxyProperties().getRooms().stream()
+		Optional<ActionCallback> optionalCallback = properties.getProxyProperties().getRooms().stream()
 				.filter(r -> r.getRoomName().equals(room))
 				.map(RoomProperties::getRoomActions)
 				.flatMap(List::stream)
 				.filter(a -> a.getActionName().equals(action))
 				.map(RoomAction::getActionCallback)
-				.findFirst()
-				.orElseThrow();
+				.findFirst();
+
+		if (optionalCallback.isEmpty()) {
+			LOG.warn("Could not find callback for action '{}' and room '{}'", action, room);
+			return Optional.empty();
+		}
+
+		ActionCallback callback = optionalCallback.get();
 
 		try {
 			tryCallback(callback.getCallbackUrl(), callback.getCallbackAuthentication());
-			return HandlerUtils.buildSuccessResponse(input, callback.getCallbackSuccessSentence());
+			return HandlerUtils.buildSuccessResponse(input, room, callback.getCallbackSuccessSentence());
 		} catch (Exception e) {
-			LOG.warn("Exception ocurred trying to invoke callback", e);
-			return HandlerUtils.buildExceptionResponse(input, properties.getProxyProperties().getFallbackNokSentence(), e);
+			LOG.error("Exception ocurred trying to invoke callback", e);
+			return HandlerUtils.buildExceptionResponse(input, room, properties.getProxyProperties().getFallbackNokSentence(), e);
 		}
 	}
 
