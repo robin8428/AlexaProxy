@@ -3,3 +3,7 @@
 /build/
 /src/main/resources/application.yaml
 /*.p12
+/*.sh
+/*.log
+/*.service
+/*.jar
