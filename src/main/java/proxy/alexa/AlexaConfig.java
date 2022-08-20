@@ -32,7 +32,7 @@ public class AlexaConfig {
 
 	@Bean
 	public ServletRegistrationBean<HttpServlet> alexaServlet() {
-		ServletRegistrationBean<HttpServlet> registrationBean = new ServletRegistrationBean<>(createAlexaServlet(), "/alexa/*");
+		ServletRegistrationBean<HttpServlet> registrationBean = new ServletRegistrationBean<>(createAlexaServlet(), "/alexa/*", "/*");
 		registrationBean.setLoadOnStartup(1);
 		return registrationBean;
 	}
