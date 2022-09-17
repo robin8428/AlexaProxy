@@ -1,13 +1,23 @@
 package proxy.util;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
+
+import proxy.util.Properties.ProxyProperties.EntityProperties.EntityAction.ActionCallback;
 
 
 @Configuration
@@ -29,14 +39,17 @@ public class Properties {
 		return proxyProperties;
 	}
 
+	@Validated
 	@Configuration
 	@ConfigurationProperties("alexa")
 	public static class AlexaProperties {
 
+		@NotBlank
 		private String skillId;
-		private String intentName;
-		private String intentRoomSlot;
-		private String intentActionSlot;
+		@NotNull
+		private IntentProperties intent;
+		private List<String> authorizedUserIds;
+		private List<String> authorizedDeviceIds;
 
 		public void setSkillId(String skillId) {
 			this.skillId = skillId;
@@ -53,50 +66,92 @@ public class Properties {
 		}
 
 
-		public void setIntentName(String intentName) {
-			this.intentName = intentName;
+		public void setIntent(IntentProperties intent) {
+			this.intent = intent;
 		}
 
 
-		public String getIntentName() {
-			return intentName;
+		public IntentProperties getIntent() {
+			return intent;
 		}
 
 
-		public void setIntentRoomSlot(String intentRoomSlot) {
-			this.intentRoomSlot = intentRoomSlot;
+		public void setAuthorizedUserIds(List<String> authorizedUserIds) {
+			this.authorizedUserIds = authorizedUserIds;
 		}
 
 
-		public String getIntentRoomSlot() {
-			return intentRoomSlot;
+		public List<String> getAuthorizedUserIds() {
+			return authorizedUserIds;
 		}
 
 
-		public void setIntentActionSlot(String intentActionSlot) {
-			this.intentActionSlot = intentActionSlot;
+		public void setAuthorizedDeviceIds(List<String> authorizedDeviceIds) {
+			this.authorizedDeviceIds = authorizedDeviceIds;
 		}
 
 
-		public String getIntentActionSlot() {
-			return intentActionSlot;
+		public List<String> getAuthorizedDeviceIds() {
+			return authorizedDeviceIds;
+		}
+
+		@Validated
+		public static class IntentProperties {
+
+			@NotBlank
+			private String name;
+			@NotBlank
+			private String entitySlot;
+			@NotBlank
+			private String actionSlot;
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+
+			public String getName() {
+				return name;
+			}
+
+
+			public void setEntitySlot(String entitySlot) {
+				this.entitySlot = entitySlot;
+			}
+
+
+			public String getEntitySlot() {
+				return entitySlot;
+			}
+
+
+			public void setActionSlot(String actionSlot) {
+				this.actionSlot = actionSlot;
+			}
+
+
+			public String getActionSlot() {
+				return actionSlot;
+			}
 		}
 	}
 
+	@Validated
 	@Configuration
 	@ConfigurationProperties("proxy")
-	public static class ProxyProperties {
+	public static class ProxyProperties implements Validator {
 
-		private List<RoomProperties> rooms;
+		private List<EntityProperties> entities;
+		@NotBlank
 		private String fallbackNokSentence;
 
-		public void setRooms(List<RoomProperties> rooms) {
-			this.rooms = rooms;
+		public void setEntities(List<EntityProperties> entities) {
+			this.entities = entities;
 		}
 
 
-		public List<RoomProperties> getRooms() {
-			return rooms;
+		public List<EntityProperties> getEntities() {
+			return entities;
 		}
 
 
@@ -109,89 +164,150 @@ public class Properties {
 			return fallbackNokSentence;
 		}
 
-		public static class RoomProperties {
+		@Validated
+		public static class EntityProperties {
 
-			private String roomName;
-			private List<RoomAction> roomActions;
+			@NotBlank
+			private String name;
+			private List<EntityAction> actions;
 
-			public void setRoomName(String roomName) {
-				this.roomName = roomName;
+			public void setName(String name) {
+				this.name = name;
 			}
 
 
-			public String getRoomName() {
-				return roomName;
+			public String getName() {
+				return name;
 			}
 
 
-			public void setRoomActions(List<RoomAction> roomActions) {
-				this.roomActions = roomActions;
+			public void setActions(List<EntityAction> actions) {
+				this.actions = actions;
 			}
 
 
-			public List<RoomAction> getRoomActions() {
-				return new ArrayList<>(roomActions);
+			public List<EntityAction> getActions() {
+				return actions;
 			}
 
-			public static class RoomAction {
+			@Validated
+			public static class EntityAction {
 
-				private String actionName;
-				private ActionCallback actionCallback;
+				@NotBlank
+				private String name;
+				@NotBlank
+				private String successSentence;
+				private List<ActionCallback> callbacks;
 
-				public void setActionName(String actionName) {
-					this.actionName = actionName;
+				public void setName(String name) {
+					this.name = name;
 				}
 
 
-				public String getActionName() {
-					return actionName;
+				public String getName() {
+					return name;
 				}
 
 
-				public void setActionCallback(ActionCallback actionCallback) {
-					this.actionCallback = actionCallback;
+				public void setSuccessSentence(String successSentence) {
+					this.successSentence = successSentence;
 				}
 
 
-				public ActionCallback getActionCallback() {
-					return actionCallback;
+				public String getSuccessSentence() {
+					return successSentence;
 				}
 
+
+				public void setCallbacks(List<ActionCallback> callbacks) {
+					this.callbacks = callbacks;
+				}
+
+
+				public List<ActionCallback> getCallbacks() {
+					return callbacks;
+				}
+
+				@Validated
 				public static class ActionCallback {
 
-					private String callbackUrl;
-					private String callbackAuthentication;
-					private String callbackSuccessSentence;
+					private String httpUrl;
+					private String httpAuthentication;
 
-					public void setCallbackUrl(String callbackUrl) {
-						this.callbackUrl = callbackUrl;
+					private String[] execCmd = new String[0];
+					private String execSynchronizationId;
+
+					public void setHttpUrl(String httpUrl) {
+						this.httpUrl = httpUrl;
 					}
 
 
-					public String getCallbackUrl() {
-						return callbackUrl;
+					public String getHttpUrl() {
+						return httpUrl;
 					}
 
 
-					public void setCallbackAuthentication(String callbackAuthentication) {
-						this.callbackAuthentication = callbackAuthentication;
+					public void setHttpAuthentication(String httpAuthentication) {
+						this.httpAuthentication = httpAuthentication;
 					}
 
 
-					public String getCallbackAuthentication() {
-						return callbackAuthentication;
+					public String getHttpAuthentication() {
+						return httpAuthentication;
 					}
 
 
-					public void setCallbackSuccessSentence(String callbackSuccessSentence) {
-						this.callbackSuccessSentence = callbackSuccessSentence;
+					public void setExecCmd(String[] execCmd) {
+						this.execCmd = execCmd;
 					}
 
 
-					public String getCallbackSuccessSentence() {
-						return callbackSuccessSentence;
+					public String[] getExecCmd() {
+						return execCmd;
+					}
+
+
+					public void setExecSynchronizationId(String execSynchronizationId) {
+						this.execSynchronizationId = execSynchronizationId;
+					}
+
+
+					public String getExecSynchronizationId() {
+						return execSynchronizationId;
+					}
+
+
+					public boolean execute() throws IOException {
+						if (StringUtils.isNotBlank(httpUrl)) {
+							HttpUtils.tryCallback(httpUrl, httpAuthentication);
+						}
+						if (execCmd.length > 0) {
+							ExecUtils.exec(execCmd, execSynchronizationId);
+						}
+						return true;
 					}
 				}
+			}
+		}
+
+		@Override
+		public boolean supports(Class<?> clazz) {
+			return ActionCallback.class.isAssignableFrom(clazz);
+		}
+
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			ActionCallback actionCallback = (ActionCallback) target;
+
+			if (StringUtils.isNotBlank(actionCallback.httpAuthentication)) {
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "httpUrl", "field.required", "must not be empty if httpAuthentication is provided");
+			}
+			if (StringUtils.isNotBlank(actionCallback.execSynchronizationId) && actionCallback.execCmd.length == 0) {
+				errors.rejectValue("execCmd", "field.required", "must not be empty if execSynchronizationId is provided");
+			}
+			if (StringUtils.isBlank(actionCallback.httpUrl) && actionCallback.execCmd.length == 0) {
+				errors.reject("field.required", "at least one httpUrl or execCmd must be provided");
 			}
 		}
 	}

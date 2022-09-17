@@ -20,23 +20,49 @@ spring:
     serialization.FAIL_ON_EMPTY_BEANS: false
 
 alexa:
-  skill-id: amzn1.ask.skill.your-skill-uuid
-  intent-name: YourIntentName
-  intent-room-slot: room-slot
-  intent-action-slot: action-slot
+  skill-id: amzn1.ask.skill.<your-skill-uuid>
+  authorized-user-ids:
+    - amzn1.ask.account.<user-id1>
+    - amzn1.ask.account.<user-id2>
+  authorized-device-ids:
+    - amzn1.ask.device.<device-id1>
+    - amzn1.ask.device.<device-id2>
+  intent:
+    name: YourIntentName
+    entity-slot: entity-slot
+    action-slot: action-slot
 
 proxy:
-  rooms:
-  - room-name: "your-room-name-value"
-    room-actions:
-    - action-name: "your-first-action-name-value"
-      action-callback:
-        callback-url: "http://localhost/your/callback?with=query"
-        callback-authentication: "Basic dXNlcjpwYXNzd29yZA=="
-        callback-success-sentence: "Action 1 was executed successfully."
-    - action-name: "your-second-action-name-value"
-      action-callback:
-        callback-url: "http://localhost/your/callback?with=different+query"
-        callback-authentication: "Basic dXNlcjpwYXNzd29yZA=="
-        callback-success-sentence: "Action 2 was executed successfully."
+  entities:
+  - name: "your-first-room-name-value"
+    actions:
+    - name: "your-first-action-name-value"
+      success-sentence: "Action 1 was executed successfully."
+      callbacks:
+      - http-url: "http://localhost/your/callback?with=query"
+        http-authentication: "Basic dXNlcjpwYXNzd29yZA=="
+    - name: "your-second-action-name-value"
+      success-sentence: "Action 2 was executed successfully."
+      callbacks:
+      - http-url: "http://localhost/your/callback?with=different+query"
+        http-authentication: "Basic dXNlcjpwYXNzd29yZA=="
+  - name: "your-second-room-name-value"
+    actions:
+    - name: "your-first-action-name-value"
+      success-sentence: "Action 1 was executed successfully."
+      callbacks:
+      - exec-cmd: [ "gpio", "write", "10", "1" ]
+        exec-synchronization-id: c429f48d-b09b-4b65-8ea2-23937c58e7c8
+    - name: "your-second-action-name-value"
+      success-sentence: "Action 2 was executed successfully."
+      callbacks:
+      - exec-cmd: [ "gpio", "write", "10", "0" ]
+        exec-synchronization-id: c429f48d-b09b-4b65-8ea2-23937c58e7c8
+    - name: "your-third-action-name-value"
+      success-sentence: "Action 3 was executed successfully."
+      callbacks:
+      - exec-cmd: [ "gpio", "write", "10", "0" ]
+        exec-synchronization-id: c429f48d-b09b-4b65-8ea2-23937c58e7c8
+      - http-url: "http://localhost/your/callback?with=different+query"
+        http-authentication: "Basic dXNlcjpwYXNzd29yZA=="
   fallback-nok-sentence: "Request could not be processed correctly."
