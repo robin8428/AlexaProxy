@@ -11,7 +11,6 @@ class HandlerUtils {
 	static Optional<Response> buildSuccessResponse(HandlerInput handlerInput, String title, String text) {
 		return handlerInput.getResponseBuilder()
 				.withSpeech(text)
-				.withSimpleCard(title, text)
 				.withShouldEndSession(true)
 				.build();
 	}

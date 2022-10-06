@@ -1,6 +1,7 @@
 package proxy.util;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -48,8 +49,10 @@ public class Properties {
 		private String skillId;
 		@NotNull
 		private IntentProperties intent;
-		private List<String> authorizedUserIds;
-		private List<String> authorizedDeviceIds;
+		boolean disableTimestampVerification = false;
+		boolean disableSignatureVerification = false;
+		private List<String> authorizedUserIds = Collections.emptyList();
+		private List<String> authorizedDeviceIds = Collections.emptyList();
 
 		public void setSkillId(String skillId) {
 			this.skillId = skillId;
@@ -73,6 +76,26 @@ public class Properties {
 
 		public IntentProperties getIntent() {
 			return intent;
+		}
+
+
+		public void setDisableTimestampVerification(boolean disableTimestampVerification) {
+			this.disableTimestampVerification = disableTimestampVerification;
+		}
+
+
+		public boolean getDisableTimestampVerification() {
+			return disableTimestampVerification;
+		}
+
+
+		public void setDisableSignatureVerification(boolean disableSignatureVerification) {
+			this.disableSignatureVerification = disableSignatureVerification;
+		}
+
+
+		public boolean getDisableSignatureVerification() {
+			return disableSignatureVerification;
 		}
 
 

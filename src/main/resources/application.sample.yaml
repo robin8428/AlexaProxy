@@ -21,6 +21,8 @@ spring:
 
 alexa:
   skill-id: amzn1.ask.skill.<your-skill-uuid>
+  disable-timestamp-verification: false
+  disable-signature-verification: false
   authorized-user-ids:
     - amzn1.ask.account.<user-id1>
     - amzn1.ask.account.<user-id2>

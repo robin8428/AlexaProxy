@@ -1,0 +1,22 @@
+spring:
+  main:
+    banner-mode: "off"
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    default-property-inclusion: NON_ABSENT
+    serialization.FAIL_ON_EMPTY_BEANS: false
+
+alexa:
+  skill-id: amzn1.ask.skill.3483647a-e764-4ab5-900c-7c2c17e46b11
+  disable-timestamp-verification: false
+  disable-signature-verification: true
+  authorized-user-ids:
+    - amzn1.ask.account.AF7KDMGMX5QRW3AL6MBCOOFFRUMYMI7WJPKP6LI6T3JEF72ROHTKMGKOMQOA33CEQB3OEATRNLKGKTXFDISXNDF6QPD7G74EWAF3NGZHKTGNWD4NKIJ4SAETZFD5EPU3ZEDFGEECFTLN7EZ2MHLZ2T2XZWSKUO5HXPVP2IEQW7ZEFIUFL5GAAQX5UJ5OBPXAC264BMD5PP7OBWI
+  authorized-devide-ids:
+    - amzn1.ask.device.AEEQDYOJLR56EVA4KFYMAHYDWQIQ7PKMJ4IKSMUIUVH4GPKFXMOAELUIUOPU6V7SAH5R4VX4AOEYUHKPLW43KIMAEHX77FEVFK75MPPEW73UCXCLNOXBJQM3VBMYH3KSJQP64XG227F2PLD6NFKVHWP2O66BSTROSFRAYTBF44ET2V2TVFN5C
+
+proxy:
+  fallback-nok-sentence: "Could not process request"
